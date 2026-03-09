@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import SelectDark from "@/components/SelectDark";
 
-type Record = {
+type FinancialRecord = {
   _id: string;
   type: "receita" | "despesa";
   amount: number;
@@ -39,10 +39,10 @@ const CATEGORY_DESPESA = [
 const CATEGORY_RECEITA = ["Atendimento", "Produtos", "Outros"];
 
 export default function FinanceiroPage() {
-  const [list, setList] = useState<Record[]>([]);
+  const [list, setList] = useState<FinancialRecord[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
-  const [modal, setModal] = useState<"new" | Record | null>(null);
+  const [modal, setModal] = useState<"new" | FinancialRecord | null>(null);
   const [form, setForm] = useState({
     type: "receita" as "receita" | "despesa",
     amount: "",
@@ -99,7 +99,7 @@ export default function FinanceiroPage() {
     setError("");
   }
 
-  function openEdit(r: Record) {
+  function openEdit(r: FinancialRecord) {
     setForm({
       type: r.type,
       amount: String(r.amount),
@@ -124,7 +124,7 @@ export default function FinanceiroPage() {
       return;
     }
     const url =
-      modal === "new" ? "/api/financial" : `/api/financial/${(modal as Record)._id}`;
+      modal === "new" ? "/api/financial" : `/api/financial/${(modal as FinancialRecord)._id}`;
     const method = modal === "new" ? "POST" : "PUT";
     const res = await fetch(url, {
       method,
@@ -149,7 +149,7 @@ export default function FinanceiroPage() {
     load();
   }
 
-  async function remove(r: Record) {
+  async function remove(r: FinancialRecord) {
     if (!confirm("Excluir este lançamento?")) return;
     const res = await fetch(`/api/financial/${r._id}`, { method: "DELETE" });
     if (res.ok) load();

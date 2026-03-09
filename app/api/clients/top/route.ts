@@ -30,7 +30,10 @@ export async function GET(req: Request) {
   const ids = topClientIds.map((r: { clientId: mongoose.Types.ObjectId }) => r.clientId);
   const clients = await Client.find({ _id: { $in: ids }, tenantId })
     .lean();
-  const clientMap = new Map(clients.map((c: { _id: mongoose.Types.ObjectId; name?: string; phone?: string }) => [c._id.toString(), c]));
+  type ClientLean = { _id: unknown; name?: string; phone?: string };
+  const clientMap = new Map<string, ClientLean>(
+    (clients as ClientLean[]).map((c) => [String(c._id), c])
+  );
 
   const result = topClientIds
     .map((r: { clientId: mongoose.Types.ObjectId; count: number; total: number }) => {

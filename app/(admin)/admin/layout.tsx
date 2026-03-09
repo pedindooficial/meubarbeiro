@@ -16,7 +16,7 @@ export default async function AdminLayout({
     <div className="min-h-screen flex flex-col">
       <header className="p-4 border-b border-gray-800 flex items-center justify-between">
         <Link href="/admin" className="font-bold text-lg">
-          Admin · Barbeiro
+          Admin · Meu Barbeiro
         </Link>
         <Link
           href="/dashboard"

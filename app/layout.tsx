@@ -12,7 +12,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Barbeiro - Gestão de Barbearias",
+  title: "Meu Barbeiro - Gestão de Barbearias",
   description: "Gerencie sua barbearia: clientes, cortes, catálogo, financeiro e planos de ação.",
   icons: { icon: "/favicon.svg" },
 };

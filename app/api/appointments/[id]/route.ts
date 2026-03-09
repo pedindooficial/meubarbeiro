@@ -58,20 +58,24 @@ export async function PUT(
     .lean();
   if (!doc) return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
 
+  const prev = previous as { status?: string } | null;
+  const updated = doc as { status?: string; total?: number; scheduledAt?: Date };
   if (
-    previous.status !== "completed" &&
-    doc.status === "completed" &&
-    doc.total != null &&
-    typeof doc.total === "number"
+    prev &&
+    prev.status !== "completed" &&
+    updated.status === "completed" &&
+    updated.total != null &&
+    typeof updated.total === "number"
   ) {
-    const scheduledAt = doc.scheduledAt instanceof Date ? doc.scheduledAt : new Date(doc.scheduledAt);
+    const raw = updated.scheduledAt;
+    const scheduledAt = raw instanceof Date ? raw : raw ? new Date(raw) : new Date();
     await FinancialRecord.create({
       tenantId: auth.tenantId,
       type: "receita",
-      amount: doc.total,
+      amount: updated.total,
       description: "Atendimento concluído",
       date: scheduledAt,
-      relatedId: doc._id,
+      relatedId: (doc as { _id: unknown })._id,
     });
   }
 

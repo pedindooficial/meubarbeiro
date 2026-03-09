@@ -39,7 +39,7 @@ export async function GET(req: Request) {
   let totalReceita = 0;
   let totalDespesa = 0;
   for (const r of records) {
-    const rec = r as { type: string; amount: number; date: Date; recurrence?: string };
+    const rec = r as unknown as { type: string; amount: number; date: Date; recurrence?: string };
     const recurrence = rec.recurrence ?? "unique";
     const effective = hasPeriod
       ? effectiveAmountInPeriod(rec.amount, rec.date, recurrence, fromDate, toDate)

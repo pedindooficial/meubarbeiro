@@ -56,6 +56,13 @@ export async function GET() {
   const receita = typeof receitaRaw === "number" && !isNaN(receitaRaw) ? receitaRaw : 0;
   const despesa = typeof despesaRaw === "number" && !isNaN(despesaRaw) ? despesaRaw : 0;
 
+  type NextAppointmentDoc = {
+    _id: unknown;
+    scheduledAt: unknown;
+    clientId?: unknown;
+    cutId?: unknown;
+  };
+  const next = nextAppointment as NextAppointmentDoc | null | undefined;
   return NextResponse.json({
     clientsCount,
     appointmentsToday,
@@ -63,15 +70,15 @@ export async function GET() {
     receita,
     despesa,
     saldo: receita - despesa,
-    nextAppointment: nextAppointment
+    nextAppointment: next
       ? {
-          _id: nextAppointment._id,
-          scheduledAt: nextAppointment.scheduledAt,
-          client: nextAppointment.clientId && typeof nextAppointment.clientId === "object"
-            ? { name: (nextAppointment.clientId as { name?: string }).name, phone: (nextAppointment.clientId as { phone?: string }).phone }
+          _id: next._id,
+          scheduledAt: next.scheduledAt,
+          client: next.clientId && typeof next.clientId === "object"
+            ? { name: (next.clientId as { name?: string }).name, phone: (next.clientId as { phone?: string }).phone }
             : null,
-          cut: nextAppointment.cutId && typeof nextAppointment.cutId === "object"
-            ? (nextAppointment.cutId as { name: string }).name
+          cut: next.cutId && typeof next.cutId === "object"
+            ? (next.cutId as { name: string }).name
             : null,
         }
       : null,

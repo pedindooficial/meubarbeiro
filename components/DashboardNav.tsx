@@ -58,7 +58,7 @@ export default function DashboardNav() {
           {open ? "✕" : "☰"}
         </button>
         <Link href="/dashboard" className="font-bold">
-          Barbeiro
+          Meu Barbeiro
         </Link>
         <span className="w-10" />
       </header>
@@ -71,7 +71,7 @@ export default function DashboardNav() {
       >
         <div className="p-4 border-b border-gray-800 hidden md:block shrink-0">
           <Link href="/dashboard" className="font-bold text-lg">
-            Barbeiro
+            Meu Barbeiro
           </Link>
         </div>
         <nav className="p-4 flex-1 flex flex-col gap-1">

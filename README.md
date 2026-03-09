@@ -1,4 +1,4 @@
-# Barbeiro – Gestão de Barbearias
+# Meu Barbeiro – Gestão de Barbearias
 
 Sistema full-stack para donos de barbearia gerenciarem clientes, cortes, catálogo, análise financeira e planos de ação. Inclui painel admin para gerenciar todos os tenants e planos pagos via Stripe.
 

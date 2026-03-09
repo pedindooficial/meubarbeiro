@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 function getMongoUri(): string {
   // Em produção defina MONGODB_URI no ambiente (ex.: Vercel)
-  return process.env.MONGODB_URI || "mongodb://localhost:27017/barbeiro";
+  return process.env.MONGODB_URI || "mongodb://localhost:27017/meubarbeiro";
 }
 
 interface MongooseCache {
