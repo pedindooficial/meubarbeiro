@@ -215,15 +215,17 @@ export default function AgendamentosPage() {
     e.preventDefault();
     setSaving(true);
     setError("");
-    const scheduledAt = getScheduledDateTime();
-    if (!scheduledAt || !form.clientId) {
+    const localDateTime = getScheduledDateTime();
+    if (!localDateTime || !form.clientId) {
       setError("Preencha cliente, data e horário.");
       setSaving(false);
       return;
     }
+    // Converte horário local do usuário para UTC para armazenar (evita 07:30 virar 04:30 no display)
+    const scheduledAtUtc = new Date(localDateTime).toISOString();
     const body: Record<string, unknown> = {
       clientId: form.clientId,
-      scheduledAt,
+      scheduledAt: scheduledAtUtc,
       status: form.status,
     };
     if (form.cutId) body.cutId = form.cutId;
