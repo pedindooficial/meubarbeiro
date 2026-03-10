@@ -228,7 +228,13 @@ export default function AgendamentosPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    const data = await res.json();
+    let data: { error?: string } = {};
+    try {
+      const text = await res.text();
+      if (text) data = JSON.parse(text);
+    } catch {
+      data = { error: "Resposta inválida do servidor." };
+    }
     setSaving(false);
     if (!res.ok) {
       setError(data.error || "Erro ao salvar");
