@@ -66,14 +66,23 @@ export default function AgendamentosPage() {
   const TIPOS_CABELO = ["Liso", "Ondulado", "Cacheado", "Crespo", "Outro"];
 
   const filteredClients = useMemo(() => {
-    if (!clientSearch.trim()) return clients;
-    const q = clientSearch.trim().toLowerCase();
-    return clients.filter(
-      (c) =>
-        c.name.toLowerCase().includes(q) ||
-        (c.phone && c.phone.replace(/\D/g, "").includes(q.replace(/\D/g, ""))) ||
-        (c.email && c.email.toLowerCase().includes(q))
-    );
+    const search = clientSearch.trim();
+    if (!search) return clients;
+    const q = search.toLowerCase();
+    const qNorm = q.normalize("NFD").replace(/\p{Diacritic}/gu, ""); // sem acentos
+    return clients.filter((c) => {
+      const name = (c.name || "").toLowerCase();
+      const nameNorm = name.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+      const phone = (c.phone || "").replace(/\D/g, "");
+      const phoneQ = q.replace(/\D/g, "");
+      const email = (c.email || "").toLowerCase();
+      return (
+        name.includes(q) ||
+        nameNorm.includes(qNorm) ||
+        (phoneQ.length > 0 && phone.includes(phoneQ)) ||
+        email.includes(q)
+      );
+    });
   }, [clients, clientSearch]);
 
   useEffect(() => {
@@ -916,16 +925,20 @@ export default function AgendamentosPage() {
                         <div className="absolute z-50 mt-1 w-full rounded-lg border border-gray-600 bg-gray-900 shadow-xl overflow-hidden">
                           <div className="p-2 border-b border-gray-700">
                             <input
-                              type="text"
+                              type="search"
+                              autoComplete="off"
                               placeholder="Buscar por nome, telefone ou email..."
                               value={clientSearch}
                               onChange={(e) => setClientSearch(e.target.value)}
-                              onKeyDown={(e) => e.stopPropagation()}
+                              onKeyDown={(e) => {
+                                e.stopPropagation();
+                                if (e.key === "Enter") e.preventDefault();
+                              }}
                               className="w-full px-3 py-2 rounded-lg bg-white/5 border border-gray-600 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                               autoFocus
                             />
                           </div>
-                          <ul className="max-h-52 overflow-auto py-1" role="listbox">
+                          <ul className="max-h-52 overflow-auto py-1" role="listbox" key={`search-${clientSearch}`}>
                             {filteredClients.length === 0 ? (
                               <li className="px-4 py-3 text-gray-500 text-sm">
                                 Nenhum cliente encontrado.
