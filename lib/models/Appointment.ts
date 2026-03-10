@@ -1,4 +1,8 @@
 import mongoose from "mongoose";
+// Garante que os modelos referenciados estão registrados antes do populate()
+import "./Barbershop";
+import "./Client";
+import "./Cut";
 
 const AppointmentSchema = new mongoose.Schema(
   {
