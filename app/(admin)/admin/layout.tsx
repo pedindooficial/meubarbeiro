@@ -15,7 +15,7 @@ export default async function AdminLayout({
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
       <AdminNav />
-      <main className="pt-14 lg:pl-64 min-h-screen overflow-auto">
+      <main className="pt-14 lg:pt-0 lg:pl-64 min-h-screen overflow-auto">
         <div className="p-6 lg:p-8">{children}</div>
       </main>
     </div>
