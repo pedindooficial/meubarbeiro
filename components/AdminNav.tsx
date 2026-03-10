@@ -30,7 +30,7 @@ export default function AdminNav() {
       {open && (
         <div className="fixed inset-0 bg-black/60 z-40 lg:hidden" onClick={() => setOpen(false)} aria-hidden />
       )}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-zinc-950 border-r border-zinc-800 flex flex-col pt-14 lg:pt-0 transition-transform duration-200 lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}
+      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-zinc-950 border-r border-zinc-800 flex flex-col pt-14 lg:pt-0 transition-transform duration-200 lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="p-5 border-b border-zinc-800 shrink-0">
           <Link href="/admin" onClick={() => setOpen(false)} className="flex items-center gap-2">
             <span className="text-xl font-bold tracking-tight text-white">Meu Barbeiro</span>

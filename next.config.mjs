@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async rewrites() {
-    return [{ source: "/favicon.ico", destination: "/favicon.svg" }];
+    return [{ source: "/favicon.ico", destination: "/favicon.png" }];
   },
 };
 
