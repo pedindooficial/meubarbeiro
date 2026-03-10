@@ -127,6 +127,17 @@ export default function AgendamentosPage() {
     setAddClientLoading(false);
   }
 
+  async function parseJsonOrEmptyArray(res: Response) {
+    const text = await res.text();
+    if (!text) return [];
+    try {
+      const data = JSON.parse(text);
+      return Array.isArray(data) ? data : [];
+    } catch {
+      return [];
+    }
+  }
+
   function loadAppointments() {
     const params = new URLSearchParams();
     if (filterDate) {
@@ -138,23 +149,21 @@ export default function AgendamentosPage() {
     }
     if (filterStatus) params.set("status", filterStatus);
     fetch(`/api/appointments?${params}`)
-      .then((r) => r.json())
-      .then((data) => {
-        setList(Array.isArray(data) ? data : []);
-      });
+      .then((r) => parseJsonOrEmptyArray(r))
+      .then((data) => setList(data));
   }
 
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      fetch("/api/appointments").then((r) => r.json()),
-      fetch("/api/clients").then((r) => r.json()),
-      fetch("/api/cuts").then((r) => r.json()),
+      fetch("/api/appointments").then((r) => parseJsonOrEmptyArray(r)),
+      fetch("/api/clients").then((r) => parseJsonOrEmptyArray(r)),
+      fetch("/api/cuts").then((r) => parseJsonOrEmptyArray(r)),
     ])
       .then(([appointments, clientsData, cutsData]) => {
-        setList(Array.isArray(appointments) ? appointments : []);
-        setClients(Array.isArray(clientsData) ? clientsData : []);
-        setCuts(Array.isArray(cutsData) ? cutsData : []);
+        setList(appointments);
+        setClients(clientsData);
+        setCuts(cutsData);
         setLoading(false);
       })
       .catch(() => setLoading(false));
