@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import AdminNav from "@/components/AdminNav";
 
 export default async function AdminLayout({
   children,
@@ -13,19 +13,11 @@ export default async function AdminLayout({
   if ((session.user as { role?: string }).role !== "admin") redirect("/dashboard");
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="p-4 border-b border-gray-800 flex items-center justify-between">
-        <Link href="/admin" className="font-bold text-lg">
-          Admin · Meu Barbeiro
-        </Link>
-        <Link
-          href="/dashboard"
-          className="text-sm text-gray-400 hover:text-white"
-        >
-          Ir ao dashboard
-        </Link>
-      </header>
-      <main className="flex-1 p-4 md:p-6 overflow-auto">{children}</main>
+    <div className="min-h-screen bg-zinc-950 text-white">
+      <AdminNav />
+      <main className="pt-14 lg:pl-64 min-h-screen overflow-auto">
+        <div className="p-6 lg:p-8">{children}</div>
+      </main>
     </div>
   );
 }
