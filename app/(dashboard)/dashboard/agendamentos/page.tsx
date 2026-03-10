@@ -984,7 +984,17 @@ export default function AgendamentosPage() {
                 <p className="text-xs text-gray-500 mb-1">Opcional – pode ser definido ao final do atendimento.</p>
                 <SelectDark
                   value={form.cutId}
-                  onChange={(v) => setForm((f) => ({ ...f, cutId: v }))}
+                  onChange={(v) => {
+                    const cut = cuts.find((c) => c._id === v);
+                    setForm((f) => ({
+                      ...f,
+                      cutId: v,
+                      total:
+                        cut && !f.total
+                          ? Number(cut.price ?? 0).toFixed(2)
+                          : f.total,
+                    }));
+                  }}
                   placeholder="Definir ao final (opcional)"
                   options={[
                     { value: "", label: "Definir ao final (opcional)" },
