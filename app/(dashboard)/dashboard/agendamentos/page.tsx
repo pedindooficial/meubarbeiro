@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import SelectDark from "@/components/SelectDark";
 
 type Client = { _id: string; name: string; phone?: string; email?: string };
@@ -59,8 +59,32 @@ export default function AgendamentosPage() {
   const [cancelReason, setCancelReason] = useState("");
   const [cancelLoading, setCancelLoading] = useState(false);
   const [detailAppointment, setDetailAppointment] = useState<Appointment | null>(null);
+  const [clientSelectOpen, setClientSelectOpen] = useState(false);
+  const [clientSearch, setClientSearch] = useState("");
+  const clientSelectRef = useRef<HTMLDivElement>(null);
 
   const TIPOS_CABELO = ["Liso", "Ondulado", "Cacheado", "Crespo", "Outro"];
+
+  const filteredClients = useMemo(() => {
+    if (!clientSearch.trim()) return clients;
+    const q = clientSearch.trim().toLowerCase();
+    return clients.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        (c.phone && c.phone.replace(/\D/g, "").includes(q.replace(/\D/g, ""))) ||
+        (c.email && c.email.toLowerCase().includes(q))
+    );
+  }, [clients, clientSearch]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (clientSelectRef.current && !clientSelectRef.current.contains(e.target as Node)) {
+        setClientSelectOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   function loadClients() {
     return fetch("/api/clients")
@@ -144,6 +168,8 @@ export default function AgendamentosPage() {
     });
     setModal("new");
     setError("");
+    setClientSearch("");
+    setClientSelectOpen(false);
   }
 
   function openEdit(a: Appointment) {
@@ -864,19 +890,72 @@ export default function AgendamentosPage() {
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-2">
-                    <SelectDark
-                      value={form.clientId}
-                      onChange={(v) => setForm((f) => ({ ...f, clientId: v }))}
-                      placeholder="Selecione"
-                      options={[
-                        { value: "", label: "Selecione" },
-                        ...clients.map((c) => ({
-                          value: c._id,
-                          label: `${c.name}${c.phone ? ` · ${c.phone}` : ""}`,
-                        })),
-                      ]}
-                    />
+                  <div className="space-y-2" ref={clientSelectRef}>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setClientSelectOpen(!clientSelectOpen);
+                          if (!clientSelectOpen) setClientSearch("");
+                        }}
+                        className="w-full px-4 py-3 rounded-lg bg-white/5 border border-gray-600 text-left text-white min-h-[44px] flex items-center justify-between gap-2"
+                        aria-haspopup="listbox"
+                        aria-expanded={clientSelectOpen}
+                      >
+                        <span className={form.clientId ? "" : "text-gray-500"}>
+                          {form.clientId
+                            ? (() => {
+                                const c = clients.find((x) => x._id === form.clientId);
+                                return c ? `${c.name}${c.phone ? ` · ${c.phone}` : ""}` : "Selecione";
+                              })()
+                            : "Selecione"}
+                        </span>
+                        <span className="text-gray-500 shrink-0">{clientSelectOpen ? "▲" : "▼"}</span>
+                      </button>
+                      {clientSelectOpen && (
+                        <div className="absolute z-50 mt-1 w-full rounded-lg border border-gray-600 bg-gray-900 shadow-xl overflow-hidden">
+                          <div className="p-2 border-b border-gray-700">
+                            <input
+                              type="text"
+                              placeholder="Buscar por nome, telefone ou email..."
+                              value={clientSearch}
+                              onChange={(e) => setClientSearch(e.target.value)}
+                              onKeyDown={(e) => e.stopPropagation()}
+                              className="w-full px-3 py-2 rounded-lg bg-white/5 border border-gray-600 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                              autoFocus
+                            />
+                          </div>
+                          <ul className="max-h-52 overflow-auto py-1" role="listbox">
+                            {filteredClients.length === 0 ? (
+                              <li className="px-4 py-3 text-gray-500 text-sm">
+                                Nenhum cliente encontrado.
+                              </li>
+                            ) : (
+                              filteredClients.map((c) => (
+                                <li
+                                  key={c._id}
+                                  role="option"
+                                  aria-selected={c._id === form.clientId}
+                                  onClick={() => {
+                                    setForm((f) => ({ ...f, clientId: c._id }));
+                                    setClientSelectOpen(false);
+                                    setClientSearch("");
+                                  }}
+                                  className={`px-4 py-3 cursor-pointer min-h-[44px] flex items-center ${
+                                    c._id === form.clientId
+                                      ? "bg-amber-500/20 text-amber-400"
+                                      : "text-white hover:bg-white/10"
+                                  }`}
+                                >
+                                  {c.name}
+                                  {c.phone ? ` · ${c.phone}` : ""}
+                                </li>
+                              ))
+                            )}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
                     <button
                       type="button"
                       onClick={() => setShowAddClient(true)}
